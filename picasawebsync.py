@@ -47,7 +47,7 @@ def which(program):
 
 jHead = which('jhead')
 
-# used https://github.com/jackpal/picasawebuploader/blob/master/main.py and 
+# used https://github.com/jackpal/picasawebuploader/blob/master/main.py and
 # http://stackoverflow.com/questions/273946/how-do-i-resize-an-image-using-pil-and-maintain-its-aspect-ratio
 def shrinkIfNeeded(path):
     if args.shrink:
@@ -530,7 +530,7 @@ class FileEntry:
             print "Warning: " + self.name + " does not have a date set"
 
 
-# Method to translate directory name to an album name	
+# Method to translate directory name to an album name
 
 def convertDirToAlbum(formElements, root, name, replace, namingextract):
     if root == name:
@@ -637,15 +637,15 @@ def repeat(function,  description, onFailRethrow):
 	for attempt in range(3):
 		try:
 			if verbose and (attempt > 0):
-				print ("Trying %s attempt %s" % (description, attempt) )	
+				print ("Trying %s attempt %s" % (description, attempt) )
 			return function()
 		except Exception,  e:
 			if exc_info == None:
 				exc_info = e
 			# FIXME - to try and stop 403 token expired
 			time.sleep(6)
-			# this should no longer be needed			
-			# gd_client=oauthLogin() 
+			# this should no longer be needed
+			# gd_client=oauthLogin()
 
 			continue
 		else:
@@ -654,7 +654,7 @@ def repeat(function,  description, onFailRethrow):
 		print ("WARNING: Failed to %s. This was due to %s" % (description, exc_info))
 		if onFailRethrow:
 			raise exc_info
-			
+
 def oauthLogin():
 	# using http://stackoverflow.com/questions/20248555/list-of-spreadsheets-gdata-oauth2/29157967#29157967 (thanks)
 	from oauth2client.file import Storage
@@ -662,35 +662,35 @@ def oauthLogin():
 	filename = os.path.join(os.path.expanduser('~'), ".picasawebsync")
 	storage = Storage(filename)
 	credentials = storage.get()
-	if credentials is None or credentials.invalid:	
-		flow = client.flow_from_clientsecrets('client_secrets.json',scope='https://picasaweb.google.com/data/',redirect_uri='urn:ietf:wg:oauth:2.0:oob')	
-		auth_uri = flow.step1_get_authorize_url()	
+	if credentials is None or credentials.invalid:
+		flow = client.flow_from_clientsecrets('client_secrets.json',scope='https://picasaweb.google.com/data/',redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+		auth_uri = flow.step1_get_authorize_url()
 		print 'Authorization URL: %s' % auth_uri
 		auth_code = raw_input('Enter the auth code: ')
 		credentials = flow.step2_exchange(auth_code)
 		storage.put(credentials)
-	# if credentials.access_token_expired:		
-	
+	# if credentials.access_token_expired:
+
 	return refreshCreds(credentials,0)
 
 
 def refreshCreds(credentials,sleep):
-        global gd_client	
+        global gd_client
         time.sleep(sleep)
-	credentials.refresh(httplib2.Http())	
+	credentials.refresh(httplib2.Http())
 
-	now = datetime.utcnow() 
+	now = datetime.utcnow()
  	expires = credentials.token_expiry
-	expires_seconds = (expires-now).seconds 	
+	expires_seconds = (expires-now).seconds
 	# print ("Expires %s from %s = %s" % (expires,now,expires_seconds) )
 
 	gd_client = gdata.photos.service.PhotosService(email='default',additional_headers={'Authorization' : 'Bearer %s' % credentials.access_token})
-	
+
 	d = threading.Thread(name='refreshCreds', target=refreshCreds, args=(credentials,expires_seconds - 10) )
 	d.setDaemon(True)
 	d.start()
 	return gd_client
-	
+
 
 
 # start of the program
